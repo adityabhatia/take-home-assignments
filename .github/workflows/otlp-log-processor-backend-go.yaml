@@ -18,3 +18,9 @@ jobs:
         working-directory: 'otlp-log-processor-backend-go'
       - run: go test ./...
         working-directory: 'otlp-log-processor-backend-go'
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v1.63.4
+          only-new-issues: true
+          args: --timeout=30m
