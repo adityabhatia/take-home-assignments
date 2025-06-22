@@ -86,7 +86,7 @@ linters-settings:
     - l
     - ou
 run:
-  go: "1.22"
+  go: "1.23"
   timeout: 40m
   allow-parallel-runners: true
   modules-download-mode: "readonly"

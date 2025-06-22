@@ -14,6 +14,7 @@ const (
 	UnknownAttributeValue = "unknown"
 )
 
+// LogRecord represents a single log entry.
 type LogRecord struct {
 	AttributeValue string
 	Timestamp      time.Time
@@ -33,12 +34,14 @@ type dash0LogsServiceServer struct {
 	batchesReceivedCounter int64
 }
 
+// LogProcessor defines the interface for processing batches of log records and their respective attributes.
 type LogProcessor interface {
 	ProcessLogBatch(ctx context.Context, records []LogRecord) error
 	GetAttributeKey() string
 	Shutdown()
 }
 
+// AttributeCounter maintains counts of log records per attribute value within a time window.
 type AttributeCounter struct {
 	mu           sync.RWMutex
 	counts       map[string]int64
@@ -52,6 +55,7 @@ type logBatch struct {
 	ctx     context.Context
 }
 
+// LogAggregator aggregates log records over a time window, processes them, and manages concurrent log processing and shutdown operations.
 type LogAggregator struct {
 	mu             sync.RWMutex
 	config         *Config

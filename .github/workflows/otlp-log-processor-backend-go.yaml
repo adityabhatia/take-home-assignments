@@ -21,6 +21,8 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.63.4
-          only-new-issues: true
-          args: --timeout=30m
+          working-directory: 'otlp-log-processor-backend-go'
+          version: v2.1
+          skip-cache: true
+          problem-matchers: true
+          args: --timeout=5m

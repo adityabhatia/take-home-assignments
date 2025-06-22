@@ -77,9 +77,9 @@ This application receives OpenTelemetry Protocol (OTLP) log records via a gRPC e
 Challenge Overview & Solution Highlights
 The core challenge involved building a robust, observable, and high-throughput log processor.
 
-### gRPC Endpoint for Log Reception:
+### Concept Overview:
 
-The `dash0LogsServiceServer` struct implements the gRPC `LogsServiceServer` interface. Its `Export` method serves as the main entry point for all incoming OTLP log batches, allowing the application to receive logs efficiently.
+- The `dash0LogsServiceServer` struct implements the gRPC `LogsServiceServer` interface. Its `Export` method serves as the main entry point for all incoming OTLP log batches, allowing the application to receive logs efficiently.
 
 - Command-line flags (`-key`, `-window`) enable users to dynamically set the desired aggregation attribute and the duration of each counting window. The `LogAggregator` internally uses a `time.Ticker` to precisely manage and rotate these aggregation `windows`. Log attributes are extracted with a clear priority: values found at the `Log` level override those at the `Scope` level, which in turn override those at the `Resource` level. If the target attribute is not present at any level, it defaults to `unknown` category.
 
