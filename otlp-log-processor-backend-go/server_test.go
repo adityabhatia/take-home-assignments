@@ -58,7 +58,6 @@ func TestLogsServiceServer_Export(t *testing.T) {
 					t.Errorf("Out -> \nWant: %q\nGot : %q", tt.expected.out, out)
 				}
 			}
-
 		})
 	}
 }
@@ -69,7 +68,8 @@ func server() (collogspb.LogsServiceClient, func()) {
 	lis := bufconn.Listen(buffer)
 
 	baseServer := grpc.NewServer()
-	collogspb.RegisterLogsServiceServer(baseServer, newServer(addr))
+	collogspb.RegisterLogsServiceServer(baseServer, newServer(addr, NewLogProcessor(&Config{WindowDuration: 10}, testLogger), testLogger))
+
 	go func() {
 		if err := baseServer.Serve(lis); err != nil {
 			log.Printf("error serving server: %v", err)
@@ -89,6 +89,7 @@ func server() (collogspb.LogsServiceClient, func()) {
 		if err != nil {
 			log.Printf("error closing listener: %v", err)
 		}
+
 		baseServer.Stop()
 	}
 
