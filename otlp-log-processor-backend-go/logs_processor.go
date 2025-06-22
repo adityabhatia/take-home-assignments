@@ -46,7 +46,7 @@ func (ac *AttributeCounter) Snapshot() (map[string]int64, int64, int64) {
 
 // NewLogProcessor creates a new LogProcessor instance
 // It initializes the log aggregator with a ticker for rotating windows and a processing channel.
-func NewLogProcessor(config *Config, logger *slog.Logger) LogProcessor {
+func NewLogProcessor(config *Config, logger *slog.Logger) LogProcessor { //nolint:ireturn
 	logAggregator := &LogAggregator{
 		config:         config,
 		currentWindow:  NewAttributeCounter(time.Now().Add(config.WindowDuration)),

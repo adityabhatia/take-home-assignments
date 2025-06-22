@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func newServer(addr string, processor LogProcessor, logger *slog.Logger) collogspb.LogsServiceServer {
+func newServer(addr string, processor LogProcessor, logger *slog.Logger) collogspb.LogsServiceServer { //nolint:ireturn
 	return &dash0LogsServiceServer{
 		addr:      addr,
 		processor: processor,

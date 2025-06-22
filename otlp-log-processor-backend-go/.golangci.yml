@@ -1,6 +1,8 @@
----
+# See the dedicated "version" documentation section.
+version: "2"
 linters:
-  enable-all: true
+  # See the dedicated "linters" documentation section.
+  default: all
   disable:
   - containedctx
   - depguard
@@ -17,89 +19,21 @@ linters:
   - tagliatelle
   - testpackage
   - wastedassign
-  - tenv
   - revive
-linters-settings:
-  gci:
-    # Section configuration to compare against.
-    # Section names are case-insensitive and may contain parameters in ().
-    # The default order of sections is `standard > default > custom > blank > dot`,
-    # If `custom-order` is `true`, it follows the order of `sections` option.
-    # Default: ["standard", "default"]
-    sections:
-    - standard # Standard section: captures all standard packages.
-    - default # Default section: contains all imports that could not be matched to another section type.
-    - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.
-    - dot # Dot section: contains all dot imports. This section is not present unless explicitly enabled.
-    - prefix(dash0.com) # Custom section: groups all imports with the specified Prefix.
-
-    # Skip generated files.
-    # Default: true
-    skip-generated: false
-    # Enable custom order of sections.
-    # If `true`, make the section order the same as the order of `sections`.
-    # Default: false
-    custom-order: true
-  godox:
-    # Report any comments starting with keywords, this is useful for TODO or FIXME comments that
-    # might be left in the code accidentally and should be resolved before merging.
-    # Default: ["TODO", "BUG", "FIXME"]
-    keywords:
-    #      - TODO # Uncomment to see TODO in code
-    - NOTE
-    - BUG
-    - FIXME
-    - OPTIMIZE
-    - HACK
-  ireturn:
-    allow:
-    - anon
-    - error
-    - empty
-    - stdlib
-    - netlink
-    - empty
-    # You can specify idiomatic endings for interface
-    - (or|er)$
-    - topology.Topology
-    - object.NetworkReference
-  importas:
-    no-unaliased: true
-    alias:
-    - pkg: k8s.io/client-go/tools/record
-      alias: cgrecord
-  cyclop:
-    max-complexity: 12
-  varnamelen:
-    ignore-names:
-    - dc
-    - err
-    - i
-    - id
-    - in
-    - ip
-    - ok
-    - rp
-    - vc
-    - vm
-    - wg
-    - l
-    - ou
+  exclusions:
+    paths:
+    - (.+)_test.go
+formatters:
+  settings:
+    gci:
+      sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.
+      - dot # Dot section: contains all dot imports. This section is not present unless explicitly enabled.
+      - prefix(dash0.com)  # Prefix section: contains all imports that start with the given prefix. The prefix is not included in the section name.
 run:
   go: "1.23"
   timeout: 40m
   allow-parallel-runners: true
   modules-download-mode: "readonly"
-  build-tags:
-issues:
-  exclude-files:
-  - zz_generated.*\.go$
-  - .*conversion.*\.go$
-  - .*fakes.*\.go$
-  - (.+)_test.go
-  exclude-rules:
-  - path: magefiles/.*\.go
-    linters:
-    - wrapcheck
-    - err113
-    - forbidigo

@@ -90,7 +90,7 @@ func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	return shutdown, err
 }
 
-func newPropagator() propagation.TextMapPropagator {
+func newPropagator() propagation.TextMapPropagator { //nolint:ireturn
 	return propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{},
 		propagation.Baggage{},

@@ -1,4 +1,4 @@
-GOLANGCI_LINT_VERSION = v1.63.4
+GOLANGCI_LINT_VERSION = v2.1.6
 GOLANGCI_LINT = ./artifacts/bin/golangci-lint
 
 .PHONY: golangci-lint-install lint test build test-benchmark init
