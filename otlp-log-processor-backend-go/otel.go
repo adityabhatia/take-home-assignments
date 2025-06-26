@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -27,7 +28,7 @@ var res = resource.NewWithAttributes(
 
 // setupOTelSDK bootstraps the OpenTelemetry pipeline.
 // If it does not return an error, make sure to call shutdown for proper cleanup.
-func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, err error) {
+func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, err error) { //nolint:nonamedreturns
 	var shutdownFuncs []func(context.Context) error
 
 	// shutdown calls cleanup functions registered via shutdownFuncs.
@@ -38,7 +39,9 @@ func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 		for _, fn := range shutdownFuncs {
 			err = errors.Join(err, fn(ctx))
 		}
+
 		shutdownFuncs = nil
+
 		return err
 	}
 
@@ -55,8 +58,10 @@ func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	tracerProvider, err := newTraceProvider()
 	if err != nil {
 		handleErr(err)
-		return
+
+		return shutdown, err
 	}
+
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
 
@@ -64,8 +69,10 @@ func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	meterProvider, err := newMeterProvider()
 	if err != nil {
 		handleErr(err)
-		return
+
+		return shutdown, err
 	}
+
 	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
 	otel.SetMeterProvider(meterProvider)
 
@@ -73,15 +80,17 @@ func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, er
 	loggerProvider, err := newLoggerProvider()
 	if err != nil {
 		handleErr(err)
-		return
+
+		return shutdown, err
 	}
+
 	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
 	global.SetLoggerProvider(loggerProvider)
 
-	return
+	return shutdown, err
 }
 
-func newPropagator() propagation.TextMapPropagator {
+func newPropagator() propagation.TextMapPropagator { //nolint:ireturn
 	return propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{},
 		propagation.Baggage{},
@@ -92,7 +101,7 @@ func newTraceProvider() (*trace.TracerProvider, error) {
 	traceExporter, err := stdouttrace.New(
 		stdouttrace.WithPrettyPrint())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create stdout trace exporter: %w", err)
 	}
 
 	traceProvider := trace.NewTracerProvider(
@@ -102,33 +111,36 @@ func newTraceProvider() (*trace.TracerProvider, error) {
 			// Default is 5s. Set to 1s for demonstrative purposes.
 			trace.WithBatchTimeout(time.Second)),
 	)
+
 	return traceProvider, nil
 }
 
 func newMeterProvider() (*metric.MeterProvider, error) {
 	metricExporter, err := stdoutmetric.New(stdoutmetric.WithPrettyPrint())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create stdout metric exporter: %w", err)
 	}
 
 	meterProvider := metric.NewMeterProvider(
 		metric.WithResource(res),
 		metric.WithReader(metric.NewPeriodicReader(metricExporter,
 			// Default is 1m. Set to 10s for demonstrative purposes.
-			metric.WithInterval(10*time.Second))),
+			metric.WithInterval(10*time.Second))), //nolint:mnd
 	)
+
 	return meterProvider, nil
 }
 
 func newLoggerProvider() (*log.LoggerProvider, error) {
 	logExporter, err := stdoutlog.New(stdoutlog.WithPrettyPrint())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create stdout log exporter: %w", err)
 	}
 
 	loggerProvider := log.NewLoggerProvider(
 		log.WithResource(res),
 		log.WithProcessor(log.NewBatchProcessor(logExporter)),
 	)
+
 	return loggerProvider, nil
 }

@@ -1,0 +1,39 @@
+# See the dedicated "version" documentation section.
+version: "2"
+linters:
+  # See the dedicated "linters" documentation section.
+  default: all
+  disable:
+  - containedctx
+  - depguard
+  - exhaustruct
+  - funlen
+  - gochecknoglobals
+  - gochecknoinits
+  - gomoddirectives
+  - lll
+  - maintidx
+  - paralleltest
+  - rowserrcheck
+  - sqlclosecheck
+  - tagliatelle
+  - testpackage
+  - wastedassign
+  - revive
+  exclusions:
+    paths:
+    - (.+)_test.go
+formatters:
+  settings:
+    gci:
+      sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - blank # Blank section: contains all blank imports. This section is not present unless explicitly enabled.
+      - dot # Dot section: contains all dot imports. This section is not present unless explicitly enabled.
+      - prefix(dash0.com)  # Prefix section: contains all imports that start with the given prefix. The prefix is not included in the section name.
+run:
+  go: "1.23"
+  timeout: 40m
+  allow-parallel-runners: true
+  modules-download-mode: "readonly"

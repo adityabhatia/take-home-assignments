@@ -1,1 +1,5 @@
 otlp-log-processor-backend
+
+artifacts/**
+
+coverage.out
